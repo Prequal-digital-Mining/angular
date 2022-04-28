@@ -72,9 +72,7 @@ export function typeToValue(
       // or
       //   import {Foo as Bar} from 'foo';
 
-      // TODO(crisbeto): the cast to `any` is here since g3 is still on TS 4.4.
-      // Should be cleaned up when g3 has been updated.
-      if ((firstDecl as any).isTypeOnly) {
+      if (firstDecl.isTypeOnly) {
         // The import specifier can't be type-only (e.g. `import {type Foo} from '...')`.
         return typeOnlyImport(typeNode, firstDecl);
       }
@@ -267,7 +265,7 @@ function resolveTypeSymbols(typeRef: ts.TypeReferenceNode, checker: ts.TypeCheck
 function entityNameToValue(node: ts.EntityName): ts.Expression|null {
   if (ts.isQualifiedName(node)) {
     const left = entityNameToValue(node.left);
-    return left !== null ? ts.createPropertyAccess(left, node.right) : null;
+    return left !== null ? ts.factory.createPropertyAccessExpression(left, node.right) : null;
   } else if (ts.isIdentifier(node)) {
     return ts.getMutableClone(node);
   } else {
